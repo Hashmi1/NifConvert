@@ -27,7 +27,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -89,11 +89,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <AdditionalIncludeDirectories>C:\Users\Ijaz Ahmed Hashmi\Documents\NifUtilsSuite-master\niflib\include;C:\Users\Ijaz Ahmed Hashmi\Downloads\Havok_Physics_Animation_2010-2-0_PC_XS_win32_VS2005_keycode_perpetual_20101115\hk2010_2_0_r1\Source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NUS_LIGHT;WIN32;_WINDOWS;NDEBUG;HK_CONFIG_SIMD=2;_CRT_SECURE_NO_WARNINGS;NIFLIB_STATIC_LINK;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NUS_LIGHT;NDEBUG;HK_CONFIG_SIMD=2;_CRT_SECURE_NO_WARNINGS;NIFLIB_STATIC_LINK;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>hkBase.lib;hkSerialize.lib;hkSceneData.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkCompat.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;UxTheme.lib;niflib_static.lib</AdditionalDependencies>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -125,16 +126,6 @@
     <None Include="res\OtherDisabled.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common\GUI\AboutDialog.h" />
-    <ClInclude Include="Common\GUI\AboutPage1.h" />
-    <ClInclude Include="Common\GUI\AboutPage2.h" />
-    <ClInclude Include="Common\GUI\BCBrowseVSListBox.h" />
-    <ClInclude Include="Common\GUI\BCTabBarCtrl.h" />
-    <ClInclude Include="Common\GUI\NifUtilsSuiteFrm.h" />
-    <ClInclude Include="Common\GUI\OptionsPageGeneral.h" />
-    <ClInclude Include="Common\GUI\OptionsPageLogView.h" />
-    <ClInclude Include="Common\GUI\OptionsPageMaterial.h" />
-    <ClInclude Include="Common\GUI\OptionsSheet.h" />
     <ClInclude Include="Common\Nif\ChunkNameHandling.h" />
     <ClInclude Include="Common\Nif\CollisionNodeHandling.h" />
     <ClInclude Include="Common\Nif\MaterialTypeHandling.h" />
@@ -147,7 +138,6 @@
     <ClInclude Include="Common\Util\DefLogMessageTypes.h" />
     <ClInclude Include="Common\Util\FDCLibHelper.h" />
     <ClInclude Include="Common\Util\FDFileHelper.h" />
-    <ClInclude Include="Common\Util\FDResourceManager.h" />
     <ClInclude Include="Common\Util\FDToolEntry.h" />
     <ClInclude Include="Common\Util\FDToolTipText.h" />
     <ClInclude Include="Common\Util\IfcBroadcastObject.h" />
@@ -155,31 +145,12 @@
     <ClInclude Include="Common\Util\IfcModelListViewObject.h" />
     <ClInclude Include="Common\Util\LogMessageObject.h" />
     <ClInclude Include="NifUtilsSuite.h" />
-    <ClInclude Include="NifUtilsSuiteDoc.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Tools\ChunkExtract\FormChunkExtractView.h" />
-    <ClInclude Include="Tools\ChunkExtract\OptionsPageChunkExtract.h" />
-    <ClInclude Include="Tools\ChunkMerge\FormChunkMergeView.h" />
-    <ClInclude Include="Tools\ChunkMerge\OptionsPageChunkMerge.h" />
-    <ClInclude Include="Tools\NifConvert\FormNifConvertView.h" />
-    <ClInclude Include="Tools\NifConvert\OptionsPageNifConvert.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\GUI\AboutDialog.cpp" />
-    <ClCompile Include="Common\GUI\AboutPage1.cpp" />
-    <ClCompile Include="Common\GUI\AboutPage2.cpp" />
-    <ClCompile Include="Common\GUI\AboutPage3.cpp" />
-    <ClCompile Include="Common\GUI\BCBrowseVSListBox.cpp" />
-    <ClCompile Include="Common\GUI\BCTabBarCtrl.cpp" />
-    <ClCompile Include="Common\GUI\NifUtilsSuiteFrm.cpp" />
-    <ClCompile Include="Common\GUI\OptionsPageGeneral.cpp" />
-    <ClCompile Include="Common\GUI\OptionsPageLogView.cpp" />
-    <ClCompile Include="Common\GUI\OptionsPageMaterial.cpp" />
-    <ClCompile Include="Common\GUI\OptionsSheet.cpp" />
-    <ClCompile Include="Common\GUI\SubFormBase.cpp" />
     <ClCompile Include="Common\Nif\NifCollisionUtility.cpp" />
     <ClCompile Include="Common\Nif\NifConvertUtility.cpp" />
     <ClCompile Include="Common\Nif\NifExtractUtility.cpp" />
@@ -189,21 +160,9 @@
     <ClCompile Include="Common\Util\FDCLibHelper.cpp" />
     <ClCompile Include="Common\Util\FDFileHelper.cpp" />
     <ClCompile Include="Common\Util\FDResourceManager.cpp" />
-    <ClCompile Include="Common\Util\FDSubFormList.cpp" />
     <ClCompile Include="Common\Util\LogMessageObject.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="NifUtilsSuite.cpp" />
-    <ClCompile Include="NifUtilsSuiteDoc.cpp" />
-    <ClCompile Include="Tools\BlenderPrepare\BPMappingListCtrl.cpp" />
-    <ClCompile Include="Tools\BlenderPrepare\FormBlenderPrepareView.cpp" />
-    <ClCompile Include="Tools\BlenderPrepare\OptionsBlenderPrepareArmor.cpp" />
-    <ClCompile Include="Tools\BlenderPrepare\SubFormArmorBlender.cpp" />
-    <ClCompile Include="Tools\BlenderPrepare\SubFormBlenderArmor.cpp" />
-    <ClCompile Include="Tools\ChunkExtract\FormChunkExtractView.cpp" />
-    <ClCompile Include="Tools\ChunkExtract\OptionsPageChunkExtract.cpp" />
-    <ClCompile Include="Tools\ChunkMerge\FormChunkMergeView.cpp" />
-    <ClCompile Include="Tools\ChunkMerge\OptionsPageChunkMerge.cpp" />
-    <ClCompile Include="Tools\NifConvert\FormNifConvertView.cpp" />
-    <ClCompile Include="Tools\NifConvert\OptionsPageNifConvert.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NifUtilsSuite.rc" />

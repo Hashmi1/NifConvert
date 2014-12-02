@@ -273,7 +273,7 @@ void Configuration::setPathTemplates(const string path)
 {
 	_pathTemplates = path;
 	_dirListTemplates.clear();
-	FDFileHelper::parseDirectory(CString(_pathTemplates.c_str()), _dirListTemplates, false, false);
+	//FDFileHelper::parseDirectory(CString(_pathTemplates.c_str()), _dirListTemplates, false, false);
 }
 
 //-----  setPathTextures()  ---------------------------------------------------
@@ -286,7 +286,7 @@ void Configuration::setPathTextures(const string path)
 	}
 	_dirListTextures.clear();
 	_dirListTextures.insert("\\");
-	FDFileHelper::parseDirectory(CString(_pathTextures.c_str()), _dirListTextures, true, true);
+	//FDFileHelper::parseDirectory(CString(_pathTextures.c_str()), _dirListTextures, true, true);
 }
 
 //-----  read()  --------------------------------------------------------------
