@@ -501,7 +501,38 @@ void CFormChunkMergeView::OnBnClickedBtConvert()
 	ncUtility.setReorderTriangles     (((CButton*) GetDlgItem(IDC_CK_REORDER_TRIS))->GetCheck() == TRUE);
 
 	//  add collision data to nif
-	ncReturn = ncUtility.addCollision(CStringA(_fileNameColl).GetString(), CStringA(_fileNameIn).GetString(), pConfig->getPathTemplates() + "\\" + CStringA(_template).GetString());
+	//ncReturn = ncUtility.addCollision(CStringA(_fileNameColl).GetString(), CStringA(_fileNameIn).GetString(), pConfig->getPathTemplates() + "\\" + CStringA(_template).GetString());
+
+	// start
+	ifstream scr_file("stats.txt");
+
+	string file_in;
+	string file_out;
+
+	while (getline(scr_file,file_in))
+	{
+		getline(scr_file,file_out);
+		
+		ncReturn = ncUtility.addCollision(file_in, file_out, pConfig->getPathTemplates() + "\\" + CStringA(_template).GetString());
+		
+		if (ncReturn == NCU_OK)
+		{
+			LogMessageObject::LogMessage(NCU_MSG_TYPE_SUCCESS, "NIF converted successfully");
+		}
+
+		else
+		{
+			LogMessageObject::LogMessage(NCU_MSG_TYPE_ERROR, "NifConverter returned code: %d", ncReturn);
+			//errs << file_in << endl;
+		}
+
+	}
+
+	scr_file.close();
+	
+
+	// end
+
 
 	//  decode result
 	if (ncReturn == NCU_OK)

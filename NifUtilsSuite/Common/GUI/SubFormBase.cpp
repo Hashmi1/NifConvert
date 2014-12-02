@@ -66,7 +66,7 @@ HBRUSH CSubFormBase::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 			hbr = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
 			break;
 		}
-	}
+	} 
 
 	return hbr;
 }

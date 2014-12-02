@@ -45,9 +45,10 @@
     <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;$(NIFLIB_DIR)\lib;$(HVKSDK_DIR)\lib;$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(NIFLIB_DIR)include;$(HVKSDK_DIR)Source;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;$(NIFLIB_DIR)\lib;$(HVKSDK_DIR)\lib;$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -86,7 +87,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ijaz Ahmed Hashmi\Documents\NifUtilsSuite-master\niflib\include;C:\Users\Ijaz Ahmed Hashmi\Downloads\Havok_Physics_Animation_2010-2-0_PC_XS_win32_VS2005_keycode_perpetual_20101115\hk2010_2_0_r1\Source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NUS_LIGHT;WIN32;_WINDOWS;NDEBUG;HK_CONFIG_SIMD=2;_CRT_SECURE_NO_WARNINGS;NIFLIB_STATIC_LINK;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -99,7 +100,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <AdditionalLibraryDirectories>$(HVKSDK_DIR)Lib\win32_net_8-0\release_multithreaded</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Ijaz Ahmed Hashmi\Documents\NifUtilsSuite-master\niflib\lib;C:\Users\Ijaz Ahmed Hashmi\Downloads\Havok_Physics_Animation_2010-2-0_PC_XS_win32_VS2005_keycode_perpetual_20101115\hk2010_2_0_r1\Lib\win32_net_8-0\release_multithreaded</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -170,6 +171,7 @@
     <ClCompile Include="Common\GUI\AboutDialog.cpp" />
     <ClCompile Include="Common\GUI\AboutPage1.cpp" />
     <ClCompile Include="Common\GUI\AboutPage2.cpp" />
+    <ClCompile Include="Common\GUI\AboutPage3.cpp" />
     <ClCompile Include="Common\GUI\BCBrowseVSListBox.cpp" />
     <ClCompile Include="Common\GUI\BCTabBarCtrl.cpp" />
     <ClCompile Include="Common\GUI\NifUtilsSuiteFrm.cpp" />
@@ -177,16 +179,25 @@
     <ClCompile Include="Common\GUI\OptionsPageLogView.cpp" />
     <ClCompile Include="Common\GUI\OptionsPageMaterial.cpp" />
     <ClCompile Include="Common\GUI\OptionsSheet.cpp" />
+    <ClCompile Include="Common\GUI\SubFormBase.cpp" />
     <ClCompile Include="Common\Nif\NifCollisionUtility.cpp" />
     <ClCompile Include="Common\Nif\NifConvertUtility.cpp" />
+    <ClCompile Include="Common\Nif\NifExtractUtility.cpp" />
+    <ClCompile Include="Common\Nif\NifPrepareUtility.cpp" />
     <ClCompile Include="Common\Nif\NifUtlMaterial.cpp" />
     <ClCompile Include="Common\Util\Configuration.cpp" />
     <ClCompile Include="Common\Util\FDCLibHelper.cpp" />
     <ClCompile Include="Common\Util\FDFileHelper.cpp" />
     <ClCompile Include="Common\Util\FDResourceManager.cpp" />
+    <ClCompile Include="Common\Util\FDSubFormList.cpp" />
     <ClCompile Include="Common\Util\LogMessageObject.cpp" />
     <ClCompile Include="NifUtilsSuite.cpp" />
     <ClCompile Include="NifUtilsSuiteDoc.cpp" />
+    <ClCompile Include="Tools\BlenderPrepare\BPMappingListCtrl.cpp" />
+    <ClCompile Include="Tools\BlenderPrepare\FormBlenderPrepareView.cpp" />
+    <ClCompile Include="Tools\BlenderPrepare\OptionsBlenderPrepareArmor.cpp" />
+    <ClCompile Include="Tools\BlenderPrepare\SubFormArmorBlender.cpp" />
+    <ClCompile Include="Tools\BlenderPrepare\SubFormBlenderArmor.cpp" />
     <ClCompile Include="Tools\ChunkExtract\FormChunkExtractView.cpp" />
     <ClCompile Include="Tools\ChunkExtract\OptionsPageChunkExtract.cpp" />
     <ClCompile Include="Tools\ChunkMerge\FormChunkMergeView.cpp" />

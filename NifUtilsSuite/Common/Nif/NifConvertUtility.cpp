@@ -126,6 +126,8 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	for (auto pIter=srcChildList.begin(), pEnd=srcChildList.end(); pIter != pEnd; ++pIter)
 	{
 		pRootOutput->AddChild(*pIter);
+		
+		
 	}
 
 	//  iterate over source nodes and convert using template
@@ -153,6 +155,135 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 
 	return NCU_OK;
 }
+
+unsigned int NifConvertUtility::convertShape2(string fileNameSrc, string fileNameDst, string fileNameTmpl)
+{
+	NiNodeRef				pRootInput     (NULL);
+	NiNodeRef				pRootOutput    (NULL);
+	NiNodeRef				pRootTemplate  (NULL);
+	NiTriShapeRef			pNiTriShapeTmpl(NULL);
+	NiCollisionObjectRef	pRootCollObject(NULL);
+	NifInfo					nifInfo;
+	vector<NiAVObjectRef>	srcChildList;
+	bool					fakedRoot      (false);
+
+	//  test on existing file names
+	if (fileNameSrc.empty())		return NCU_ERROR_MISSING_FILE_NAME;
+	if (fileNameDst.empty())		return NCU_ERROR_MISSING_FILE_NAME;
+	if (fileNameTmpl.empty())		return NCU_ERROR_MISSING_FILE_NAME;
+
+	//  initialize user messages
+	_userMessages.clear();
+	logMessage(NCU_MSG_TYPE_INFO, "Source:  "      + (fileNameSrc.empty() ? "- none -" : fileNameSrc));
+	logMessage(NCU_MSG_TYPE_INFO, "Template:  "    + (fileNameTmpl.empty() ? "- none -" : fileNameTmpl));
+	logMessage(NCU_MSG_TYPE_INFO, "Destination:  " + (fileNameDst.empty() ? "- none -" : fileNameDst));
+	logMessage(NCU_MSG_TYPE_INFO, "Texture:  "     + (_pathTexture.empty() ? "- none -" : _pathTexture));
+
+	//  initialize used texture list
+	_usedTextures.clear();
+	_newTextures.clear();
+
+	//  read input NIF
+	if ((pRootInput = getRootNodeFromNifFile(fileNameSrc, "source", fakedRoot, &nifInfo)) == NULL)
+	{
+		logMessage(NCU_MSG_TYPE_ERROR, "Can't open '" + fileNameSrc + "' as input");
+		return NCU_ERROR_CANT_OPEN_INPUT;
+	}
+
+	//  get template nif
+	pRootTemplate = DynamicCast<BSFadeNode>(ReadNifTree((const char*) fileNameTmpl.c_str()));
+	if (pRootTemplate == NULL)
+	{
+		logMessage(NCU_MSG_TYPE_ERROR, "Can't open '" + fileNameTmpl + "' as template");
+		return NCU_ERROR_CANT_OPEN_TEMPLATE;
+	}
+
+	//  get shapes from template
+	//  - shape root
+
+	/*
+	pNiTriShapeTmpl = DynamicCast<NiTriShape>(pRootTemplate->GetChildren().at(0));
+	if (pNiTriShapeTmpl == NULL)
+	{
+		logMessage(NCU_MSG_TYPE_INFO, "Template has no NiTriShape.");
+	}
+	*/
+
+	//  get data from input node
+	srcChildList    = pRootInput->GetChildren();
+	pRootCollObject = pRootInput->GetCollisionObject();
+	
+	//  template root is used as root of output
+	//pRootOutput = pRootTemplate;
+	pRootOutput = new NiNode();
+
+	//  move date from input to output
+	pRootInput ->SetCollisionObject(NULL);
+	pRootOutput->SetCollisionObject(pRootCollObject);
+	pRootOutput->SetLocalTransform(pRootInput->GetLocalTransform());
+	pRootOutput->SetName(pRootInput->GetName());
+
+	//  get rid of unwanted subnodes
+	pRootOutput->ClearChildren();
+	pRootInput->ClearChildren();
+
+	//  move children to output
+	for (auto pIter=srcChildList.begin(), pEnd=srcChildList.end(); pIter != pEnd; ++pIter)
+	{
+		pRootOutput->AddChild(*pIter);			
+	}
+
+	vector<NiAVObjectRef>	templateChildren;
+	
+	templateChildren = pRootTemplate->GetChildren();
+
+	for (auto pIter2=templateChildren.begin(), pEnd2=templateChildren.end(); pIter2 != pEnd2; ++pIter2)
+	{
+	
+		NiNode* node_;
+		node_ = DynamicCast<NiNode>(*pIter2);
+
+		if (node_ == NULL)
+		{
+			continue;
+		}
+
+		if (node_->GetName().compare("FortRuinsDoor01") == 0)
+		{
+			node_->AddChild(DynamicCast<NiAVObject>(pRootOutput));
+		}
+		//pRootOutput->AddChild(*pIter2);			
+	}
+
+
+
+
+	//  iterate over source nodes and convert using template
+	//pRootOutput = convertNiNode(pRootOutput, pNiTriShapeTmpl, pRootOutput);
+
+	//  write missing textures to log - as block
+	//for (auto pIter=_newTextures.begin(), pEnd=_newTextures.end(); pIter != pEnd; ++pIter)
+	{
+		//logMessage(NCU_MSG_TYPE_TEXTURE_MISS, *pIter);
+	}
+
+	//  set version information
+	stringstream	sStream;
+
+	sStream << nifInfo.version << ';' << nifInfo.userVersion;
+	nifInfo.version      = VER_20_2_0_7;
+	nifInfo.userVersion  = 12;
+	nifInfo.userVersion2 = 83;
+	nifInfo.creator      = "NifConvert";
+	nifInfo.exportInfo1  = MASTER_PRODUCT_VERSION_STR;
+	nifInfo.exportInfo2  = sStream.str();
+
+	//  write modified nif file
+	WriteNifTree((const char*) fileNameDst.c_str(), pRootTemplate, nifInfo);
+
+	return NCU_OK;
+}
+
 
 /*---------------------------------------------------------------------------*/
 void NifConvertUtility::setTexturePath(string pathTexture)
@@ -276,8 +407,36 @@ NiNodeRef NifConvertUtility::getRootNodeFromNifFile(string fileName, string logP
 /*---------------------------------------------------------------------------*/
 NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTmplNode, NiNodeRef pRootNode, NiAlphaPropertyRef pTmplAlphaProp)
 {
+	
+	
 	NiNodeRef				pDstNode    (pSrcNode);
 	vector<NiAVObjectRef>	srcShapeList(pDstNode->GetChildren());
+
+	
+
+	/*
+	fstream as;
+	as.open ("nodes2.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+
+	if (pDstNode->GetType().IsSameType(NiNode::TYPE))
+	{
+		as << "TRUE" << endl;	
+	}
+
+	else
+	{
+		as << "FALSE" << endl;	
+	}
+	as.close();
+	*/
+	
+	
+	
+
+	//if (!pDstNode->GetType().IsSameType(NiNode::TYPE) && !pDstNode->GetType().IsSameType(BSFadeNode::TYPE) && !pDstNode->GetType().IsSameType(NiTriShape::TYPE) && !pDstNode->GetType().IsSameType(NiTriStrips::TYPE))
+	{
+
+	}
 
 	//  find NiAlphaProperty and use as template in sub-nodes
 	if (DynamicCast<NiAlphaProperty>(pDstNode->GetPropertyByType(NiAlphaProperty::TYPE)) != NULL)
@@ -293,10 +452,18 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 
 	//  unlink children
 	pDstNode->ClearChildren();
+	pDstNode->ClearEffects();	
+	pDstNode->ClearControllers();
+	pDstNode->ClearExtraData();
 
 	//  iterate over source nodes and convert using template
 	for (auto  ppIter=srcShapeList.begin(), pEnd=srcShapeList.end(); ppIter != pEnd; ppIter++)
 	{
+		
+		//DynamicCast<NiTriShape>(*ppIter) == NULL && DynamicCast<NiTriStrips>(*ppIter) == NULL ** DynamicCast<NiTriStrips>(*ppIter) != NULL
+
+		
+
 		//  NiTriShape
 		if (DynamicCast<NiTriShape>(*ppIter) != NULL)
 		{
@@ -315,7 +482,16 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 		//  NiNode (and derived classes?)
 		else if (DynamicCast<NiNode>(*ppIter) != NULL)
 		{
-			pDstNode->AddChild(&(*convertNiNode(DynamicCast<NiNode>(*ppIter), pTmplNode, pRootNode, pTmplAlphaProp)));
+			NiNode* node_hashmi = DynamicCast<NiNode>(*ppIter);
+
+						
+				if (node_hashmi->GetType().IsSameType(NiNode::TYPE) || node_hashmi->GetType().IsSameType(BSFadeNode::TYPE))
+				{
+					pDstNode->AddChild(&(*convertNiNode(DynamicCast<NiNode>(*ppIter), pTmplNode, pRootNode, pTmplAlphaProp)));
+				}
+			
+
+			
 		}
 	}
 
@@ -340,6 +516,38 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 /*---------------------------------------------------------------------------*/
 NiTriShapeRef NifConvertUtility::convertNiTriShape(NiTriShapeRef pSrcNode, NiTriShapeRef pTmplNode, NiAlphaPropertyRef pTmplAlphaProp)
 {
+	if (pSrcNode->GetData()->GetUVSetCount() > 1)
+	{
+		std::fstream fs;
+		fs.open ("errors_mesh.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+		fs << pSrcNode->GetName() << endl;
+		fs.close();
+		
+		pSrcNode->GetData()->SetUVSetCount(1);
+		NiPropertyRef niProp = pSrcNode->GetPropertyByType(NiTexturingProperty::TYPE);
+		
+		NiTexturingPropertyRef niTexProp;
+		if ( niProp != NULL ) {
+			niTexProp = DynamicCast<NiTexturingProperty>(niProp);
+			
+			niTexProp->ClearTexture(TexType::BUMP_MAP);
+			niTexProp->ClearTexture(TexType::DARK_MAP);
+			niTexProp->ClearTexture(TexType::DECAL_0_MAP);
+			niTexProp->ClearTexture(TexType::DECAL_1_MAP);
+			niTexProp->ClearTexture(TexType::DECAL_2_MAP);
+			niTexProp->ClearTexture(TexType::DETAIL_MAP);
+			niTexProp->ClearTexture(TexType::DETAIL_MAP);
+			niTexProp->ClearTexture(TexType::GLOSS_MAP);
+			niTexProp->ClearTexture(TexType::GLOW_MAP);
+			niTexProp->ClearTexture(TexType::NORMAL_MAP);
+			niTexProp->ClearTexture(TexType::UNKNOWN2_MAP);
+			
+			
+		}
+		
+
+	}
+
 	//  NiTriShape is moved from src to dest. It's unlinked in calling function
 	NiTriShapeRef	pDstNode(pSrcNode);
 
