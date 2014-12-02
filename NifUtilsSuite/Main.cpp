@@ -27,8 +27,20 @@ extern "C" int __cdecl ADP_Close( void );
 # include <string>
 using namespace std;
 
+static void HK_CALL errorReport(const char* msg, void* userArgGivenToInit)
+{
+	string	tString("Havok System returns error:\r\n\r\n");
+
+	cout <<  tString  <<  msg << endl;
+}
+
 int main()
 {
+		//  initialize Havok  (HK_MEMORY_USAGE bytes of physics solver buffer)
+	hkMemoryRouter*		pMemoryRouter(hkMemoryInitUtil::initDefault(hkMallocAllocator::m_defaultMallocAllocator, hkMemorySystem::FrameInfo(HK_MEMORY_USAGE)));
+	hkBaseSystem::init(pMemoryRouter, errorReport);
+
+
 	NifConvertUtility utility;
 
 	string line;
