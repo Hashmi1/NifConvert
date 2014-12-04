@@ -57,6 +57,7 @@ NifConvertUtility::~NifConvertUtility()
 /*---------------------------------------------------------------------------*/
 unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileNameDst, string fileNameTmpl)
 {
+	cout << "Here3" << endl;
 	NiNodeRef				pRootInput     (NULL);
 	NiNodeRef				pRootOutput    (NULL);
 	NiNodeRef				pRootTemplate  (NULL);
@@ -65,30 +66,30 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	NifInfo					nifInfo;
 	vector<NiAVObjectRef>	srcChildList;
 	bool					fakedRoot      (false);
-
+	cout << "Here4" << endl;
 	//  test on existing file names
 	if (fileNameSrc.empty())		return NCU_ERROR_MISSING_FILE_NAME;
 	if (fileNameDst.empty())		return NCU_ERROR_MISSING_FILE_NAME;
 	if (fileNameTmpl.empty())		return NCU_ERROR_MISSING_FILE_NAME;
-
+	cout << "Here5" << endl;
 	//  initialize user messages
 	_userMessages.clear();
 	logMessage(NCU_MSG_TYPE_INFO, "Source:  "      + (fileNameSrc.empty() ? "- none -" : fileNameSrc));
 	logMessage(NCU_MSG_TYPE_INFO, "Template:  "    + (fileNameTmpl.empty() ? "- none -" : fileNameTmpl));
 	logMessage(NCU_MSG_TYPE_INFO, "Destination:  " + (fileNameDst.empty() ? "- none -" : fileNameDst));
 	logMessage(NCU_MSG_TYPE_INFO, "Texture:  "     + (_pathTexture.empty() ? "- none -" : _pathTexture));
-
+	cout << "Here6" << endl;
 	//  initialize used texture list
 	_usedTextures.clear();
 	_newTextures.clear();
-
+	cout << "Here7" << endl;
 	//  read input NIF
 	if ((pRootInput = getRootNodeFromNifFile(fileNameSrc, "source", fakedRoot, &nifInfo)) == NULL)
 	{
 		logMessage(NCU_MSG_TYPE_ERROR, "Can't open '" + fileNameSrc + "' as input");
 		return NCU_ERROR_CANT_OPEN_INPUT;
 	}
-
+	cout << "Here8" << endl;
 	//  get template nif
 	pRootTemplate = DynamicCast<BSFadeNode>(ReadNifTree((const char*) fileNameTmpl.c_str()));
 	if (pRootTemplate == NULL)
@@ -96,7 +97,7 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 		logMessage(NCU_MSG_TYPE_ERROR, "Can't open '" + fileNameTmpl + "' as template");
 		return NCU_ERROR_CANT_OPEN_TEMPLATE;
 	}
-
+	cout << "Here9" << endl;
 	//  get shapes from template
 	//  - shape root
 	pNiTriShapeTmpl = DynamicCast<NiTriShape>(pRootTemplate->GetChildren().at(0));
@@ -104,11 +105,11 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	{
 		logMessage(NCU_MSG_TYPE_INFO, "Template has no NiTriShape.");
 	}
-
+	cout << "Here10" << endl;
 	//  get data from input node
 	srcChildList    = pRootInput->GetChildren();
 	pRootCollObject = pRootInput->GetCollisionObject();
-	
+	cout << "Here11" << endl;
 	//  template root is used as root of output
 	pRootOutput = pRootTemplate;
 
@@ -117,11 +118,11 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	pRootOutput->SetCollisionObject(pRootCollObject);
 	pRootOutput->SetLocalTransform(pRootInput->GetLocalTransform());
 	pRootOutput->SetName(pRootInput->GetName());
-
+	cout << "Here12" << endl;
 	//  get rid of unwanted subnodes
 	pRootOutput->ClearChildren();
 	pRootInput->ClearChildren();
-
+	cout << "Here13" << endl;
 	//  move children to output
 	for (auto pIter=srcChildList.begin(), pEnd=srcChildList.end(); pIter != pEnd; ++pIter)
 	{
@@ -129,19 +130,19 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 		
 		
 	}
-
+	cout << "Here14" << endl;
 	//  iterate over source nodes and convert using template
 	pRootOutput = convertNiNode(pRootOutput, pNiTriShapeTmpl, pRootOutput);
-
+	cout << "Here15" << endl;
 	//  write missing textures to log - as block
 	for (auto pIter=_newTextures.begin(), pEnd=_newTextures.end(); pIter != pEnd; ++pIter)
 	{
 		logMessage(NCU_MSG_TYPE_TEXTURE_MISS, *pIter);
 	}
-
+	cout << "Here16" << endl;
 	//  set version information
 	stringstream	sStream;
-
+	cout << "Here17" << endl;
 	sStream << nifInfo.version << ';' << nifInfo.userVersion;
 	nifInfo.version      = VER_20_2_0_7;
 	nifInfo.userVersion  = 12;
@@ -149,14 +150,16 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	nifInfo.creator      = "NifConvert";
 	nifInfo.exportInfo1  = MASTER_PRODUCT_VERSION_STR;
 	nifInfo.exportInfo2  = sStream.str();
-
+	cout << "Here18" << endl;
 	//  write modified nif file
 	WriteNifTree((const char*) fileNameDst.c_str(), pRootOutput, nifInfo);
-
+	cout << "Here19" << endl;
 	return NCU_OK;
 }
 
-unsigned int NifConvertUtility::convertShape2(string fileNameSrc, string fileNameDst, string fileNameTmpl)
+// This functions turns a static door into an animated skyrim door.
+
+unsigned int NifConvertUtility::convert_animated_door(string fileNameSrc, string fileNameDst, string fileNameTmpl)
 {
 	NiNodeRef				pRootInput     (NULL);
 	NiNodeRef				pRootOutput    (NULL);
@@ -368,12 +371,18 @@ void NifConvertUtility::setLogCallback(void (*logCallback) (const int type, cons
 /*---------------------------------------------------------------------------*/
 NiNodeRef NifConvertUtility::getRootNodeFromNifFile(string fileName, string logPreText, bool& fakedRoot, NifInfo* pNifInfo)
 {
+	cout << "Here7.1" << endl;
+
 	NiObjectRef		pRootTree (NULL);
 	NiNodeRef		pRootInput(NULL);
 
 	//  get input nif
-	pRootTree = ReadNifTree((const char*) fileName.c_str(), pNifInfo);
 
+	cout << pNifInfo << endl;
+	cout << fileName << endl;
+
+	pRootTree = ReadNifTree((const char*) fileName.c_str(), pNifInfo);
+	cout << "Here7.2" << endl;
 	//  NiNode as root
 	if (DynamicCast<NiNode>(pRootTree) != NULL)
 	{
@@ -454,7 +463,7 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 	pDstNode->ClearChildren();
 	pDstNode->ClearEffects();	
 	pDstNode->ClearControllers();
-	pDstNode->ClearExtraData();
+	//pDstNode->ClearExtraData();
 
 	//  iterate over source nodes and convert using template
 	for (auto  ppIter=srcShapeList.begin(), pEnd=srcShapeList.end(); ppIter != pEnd; ppIter++)

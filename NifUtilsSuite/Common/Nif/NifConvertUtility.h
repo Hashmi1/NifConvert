@@ -60,7 +60,7 @@ public:
 	 * \param[in] fileNameTmpl  path and name of Nif-file used as template
 	 */
 	virtual unsigned int convertShape(string fileNameSrc, string fileNameDst, string fileNameTmpl);
-	virtual unsigned int convertShape2(string fileNameSrc, string fileNameDst, string fileNameTmpl);
+	virtual unsigned int convert_animated_door(string fileNameSrc, string fileNameDst, string fileNameTmpl);
 	/*!
 	 * set texture path used for re-locate textures
 	 * 

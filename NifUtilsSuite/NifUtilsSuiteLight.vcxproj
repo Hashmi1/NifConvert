@@ -49,6 +49,7 @@
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(NIFLIB_DIR)include;$(HVKSDK_DIR)Source;$(DXSDK_DIR)Include</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;$(NIFLIB_DIR)\lib;$(HVKSDK_DIR)\lib;$(DXSDK_DIR)Lib\x86</LibraryPath>
     <GenerateManifest>false</GenerateManifest>
+    <TargetName>NifConvert</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -94,7 +95,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>NotSet</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>hkBase.lib;hkSerialize.lib;hkSceneData.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkCompat.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;UxTheme.lib;niflib_static.lib</AdditionalDependencies>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
