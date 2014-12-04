@@ -527,11 +527,7 @@ NiTriShapeRef NifConvertUtility::convertNiTriShape(NiTriShapeRef pSrcNode, NiTri
 {
 	if (pSrcNode->GetData()->GetUVSetCount() > 1)
 	{
-		std::fstream fs;
-		fs.open ("errors_mesh.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-		fs << pSrcNode->GetName() << endl;
-		fs.close();
-		
+				
 		pSrcNode->GetData()->SetUVSetCount(1);
 		NiPropertyRef niProp = pSrcNode->GetPropertyByType(NiTexturingProperty::TYPE);
 		

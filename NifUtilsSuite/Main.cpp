@@ -76,7 +76,10 @@ int add_collision(string source_file, string destination_file, string tmplate)
 
 int make_door(string source_file, string destination_file, string tmplate)
 {
-
+	string fl_name = destination_file.substr(destination_file.find_last_of("\\"),destination_file.length() - destination_file.find_last_of("\\"));
+	cout << "Making animated door from: " << fl_name << endl;
+	NifConvertUtility utility;		
+	return utility.convert_animated_door(source_file,destination_file,tmplate);
 }
 
 enum Mode
@@ -84,6 +87,7 @@ enum Mode
 	NotAssigned,
 	STAT,
 	DOOR_ANIM,
+	DOOR_LOAD
 
 };
 
@@ -156,6 +160,16 @@ int main(int argc, char* argv[])
 
 		  mode = DOOR_ANIM;
 	  }
+	  else if(arg.compare("-door_load") == 0)
+	  {
+		  if (mode != NotAssigned)
+		  {
+			  cout << " More than one mode selected " << endl;
+			  return -1;
+		  }
+
+		  mode = DOOR_LOAD;
+	  }
 	  else if(arg.compare("-txtr_prefix") == 0)
 	  {
 		  txtr_prefix = argv[i+1];
@@ -164,30 +178,58 @@ int main(int argc, char* argv[])
 	  
 	}
 
+	int ret = 0;
+
 	if (mode == NotAssigned || file_in.empty() || file_out.empty() || txtr_prefix.empty())
 	{
 		cout << "One or more essential arguments were not supplied. Exiting" << endl;
 		return -1;
 	}
 
-	if (mode == STAT)
+	
+
+	if (mode == STAT  || mode == DOOR_LOAD)
 	{
 		string template_ = GetExeFileName() + "\\template_stat.nif";
-		convert_shape(file_in,file_out,template_,txtr_prefix);
-		add_collision(file_in,file_out,template_);
+		int s = convert_shape(file_in,file_out,template_,txtr_prefix);
+		if (s != NCU_OK)
+		{
+			remove(file_out.c_str());
+			return -1;
+		}
+		int s2 = add_collision(file_in,file_out,template_);
+		if (s2 != NCU_OK)
+		{
+			remove(file_out.c_str());
+			return -1;
+		}
 	}
 	else if (mode == DOOR_ANIM)
 	{
-		convert_shape(file_in,file_out,"",txtr_prefix);
-		add_collision(file_in,file_out,"");
+		string template_ = GetExeFileName() + "\\template_stat.nif";
+		int s = convert_shape(file_in,file_out,template_,txtr_prefix);
+		if (s != NCU_OK)
+		{
+			remove(file_out.c_str());
+			return -1;
+		}
+		template_ = GetExeFileName() + "\\template_door_collision.nif";
+		int s2 = add_collision(file_in,file_out,template_);
+		if (s2 != NCU_OK)
+		{
+			remove(file_out.c_str());
+			return -1;
+		}
+		template_ = GetExeFileName() + "\\template_door.nif";
+		int s3 = make_door(file_out,file_out,template_);
+		if (s3 != NCU_OK)
+		{
+			remove(file_out.c_str());
+			cout << "Failed conv" << endl;
+			return -1;
+		}
 	}
 	
-
-	
-	//getline(cin,line);
-	
-	
-
-
+		
 	return 0;
 }
