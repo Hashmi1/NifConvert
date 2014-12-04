@@ -120,6 +120,8 @@ unsigned int NifCollisionUtility::addCollision(string fileNameCollSrc, string fi
 	//    CollisionNodeHandling::NCU_CN_FALLBACK should be osolete after this point
 	if (!collSourceHasCollNodes(fileNameCollSrc))
 	{
+		cout << "Source File Has No Collision. No collision will be added to converted file." << endl;
+		return NCU_OK;
 		//  fallback to create single collision from model data
 		_mergeCollision = true;
 		_cnHandling     = CollisionNodeHandling(NCU_CN_SHAPES);
