@@ -33,7 +33,8 @@
 #include "obj/hkPackedNiTriStripsData.h"
 #include "obj/bhkMoppBvTreeShape.h"
 #include "obj/bhkRigidBody.h"
-
+#include "obj/BSValueNode.h"
+#include "obj/BSXFlags.h"
 //-----  DEFINES  -------------------------------------------------------------
 //  used namespaces
 using namespace Niflib;
@@ -126,12 +127,11 @@ unsigned int NifConvertUtility::convertShape(string fileNameSrc, string fileName
 	//  move children to output
 	for (auto pIter=srcChildList.begin(), pEnd=srcChildList.end(); pIter != pEnd; ++pIter)
 	{
-		pRootOutput->AddChild(*pIter);
-		
-		
+		pRootOutput->AddChild(*pIter);				
 	}
 	cout << "Here14" << endl;
 	//  iterate over source nodes and convert using template
+	root_bsafade = pRootOutput;
 	pRootOutput = convertNiNode(pRootOutput, pNiTriShapeTmpl, pRootOutput);
 	cout << "Here15" << endl;
 	//  write missing textures to log - as block
@@ -272,6 +272,7 @@ unsigned int NifConvertUtility::convert_animated_door(string fileNameSrc, string
 
 	//  set version information
 	stringstream	sStream;
+	
 
 	sStream << nifInfo.version << ';' << nifInfo.userVersion;
 	nifInfo.version      = VER_20_2_0_7;
@@ -413,34 +414,88 @@ NiNodeRef NifConvertUtility::getRootNodeFromNifFile(string fileName, string logP
 	return pRootInput;
 }
 
+string toLower(string inp)
+{
+	string outp = inp;
+	for (int i = 0; i < inp.length(); i++)
+	{
+		outp[i] = tolower(inp.at(i));
+	}
+
+	return outp;
+}
+
 /*---------------------------------------------------------------------------*/
+
+
 NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTmplNode, NiNodeRef pRootNode, NiAlphaPropertyRef pTmplAlphaProp)
 {
 	
 	
 	NiNodeRef				pDstNode    (pSrcNode);
+	
+
+	//pDstNode->SetName(pDstNode->GetName().replace(
+	string node_name_in = pDstNode->GetName();
+	string node_name_out = "";
+	for (int i = 0; i < node_name_in.length(); i++)
+	{
+		if (node_name_in[i] != '.' && node_name_in[i] != '_' && node_name_in[i] != ' ')
+		{
+			node_name_out = node_name_out + node_name_in[i];
+		}
+	}
+
+	pDstNode->SetName(node_name_out);
+	node_name_in = node_name_out;
+
+	if (node_name_in.compare("AttachLight") == 0)
+	{
+		Vector3 tr = pDstNode->GetLocalTranslation();
+		tr.z += 10.0f;
+		pDstNode->SetLocalTranslation(tr);
+		
+	}
+	
+	if (node_name_in.compare("ShadowBox") == 0)
+	{
+		cout << "Removing ShadowBox" << endl;
+		pDstNode->ClearChildren();
+	}
+
+	if (toLower(node_name_in).find("fireemit") != -1)
+	{
+		NiExtraDataRef ed = root_bsafade->GetExtraData().front();
+		NiIntegerExtraDataRef iref = DynamicCast<NiIntegerExtraData>(ed);
+
+		iref->SetData(147);
+		
+		cout << "Adding TorchFlame Addon" << endl;
+		BSValueNodeRef candle_flame = new BSValueNode();
+		candle_flame->SetName("AddOnNode");
+		candle_flame->value = 46;
+		pDstNode->AddChild(DynamicCast<NiAVObject>(candle_flame));
+	}
+
+	else if (node_name_in.find("CandleFlame") != -1)
+	{
+		NiExtraDataRef ed = root_bsafade->GetExtraData().front();
+		NiIntegerExtraDataRef iref = DynamicCast<NiIntegerExtraData>(ed);
+
+		iref->SetData(147);
+		
+		cout << "Adding CandleFlame Addon" << endl;
+		BSValueNodeRef candle_flame = new BSValueNode();
+		candle_flame->SetName("AddOnNode");
+		candle_flame->value = 49;
+		pDstNode->AddChild(DynamicCast<NiAVObject>(candle_flame));
+	}
+
+
+		
+
+	
 	vector<NiAVObjectRef>	srcShapeList(pDstNode->GetChildren());
-
-	
-
-	/*
-	fstream as;
-	as.open ("nodes2.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-
-	if (pDstNode->GetType().IsSameType(NiNode::TYPE))
-	{
-		as << "TRUE" << endl;	
-	}
-
-	else
-	{
-		as << "FALSE" << endl;	
-	}
-	as.close();
-	*/
-	
-	
-	
 
 	//if (!pDstNode->GetType().IsSameType(NiNode::TYPE) && !pDstNode->GetType().IsSameType(BSFadeNode::TYPE) && !pDstNode->GetType().IsSameType(NiTriShape::TYPE) && !pDstNode->GetType().IsSameType(NiTriStrips::TYPE))
 	{
@@ -463,8 +518,11 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 	pDstNode->ClearChildren();
 	pDstNode->ClearEffects();	
 	pDstNode->ClearControllers();
-	//pDstNode->ClearExtraData();
 
+	if (!pDstNode->GetType().IsSameType(BSFadeNode::TYPE))
+	{
+		pDstNode->ClearExtraData();
+	}
 	//  iterate over source nodes and convert using template
 	for (auto  ppIter=srcShapeList.begin(), pEnd=srcShapeList.end(); ppIter != pEnd; ppIter++)
 	{
@@ -494,7 +552,7 @@ NiNodeRef NifConvertUtility::convertNiNode(NiNodeRef pSrcNode, NiTriShapeRef pTm
 			NiNode* node_hashmi = DynamicCast<NiNode>(*ppIter);
 
 						
-				if (node_hashmi->GetType().IsSameType(NiNode::TYPE) || node_hashmi->GetType().IsSameType(BSFadeNode::TYPE))
+			if (node_hashmi->GetType().IsSameType(NiNode::TYPE) || node_hashmi->GetType().IsSameType(BSFadeNode::TYPE) || node_hashmi->GetType().IsSameType(BSValueNode::TYPE))
 				{
 					pDstNode->AddChild(&(*convertNiNode(DynamicCast<NiNode>(*ppIter), pTmplNode, pRootNode, pTmplAlphaProp)));
 				}

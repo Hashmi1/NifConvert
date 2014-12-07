@@ -139,6 +139,8 @@ public:
 
 protected:
 
+	NiNodeRef root_bsafade;
+
 	/*!	ptr. to logging callback function */
 	void (*_logCallback) (const int, const char*);
 

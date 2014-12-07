@@ -152,6 +152,7 @@
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimUtil.cpp" />
     <ClCompile Include="Common\Nif\NifCollisionUtility.cpp" />
     <ClCompile Include="Common\Nif\NifConvertUtility.cpp" />
     <ClCompile Include="Common\Nif\NifExtractUtility.cpp" />
